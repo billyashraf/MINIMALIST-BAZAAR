@@ -1,0 +1,284 @@
+# Minimalist Bazaar
+
+A modern e-commerce platform built with Next.js, MongoDB, Mongoose, and Tailwind CSS.
+
+The platform enables sellers to curate products from external online stores, set custom pricing, and publish listings through a streamlined affiliate and dropshipping workflow.
+
+> **Important:** Ensure all integrations comply with each store's terms of service, affiliate agreements, API policies, and local consumer protection laws. Automated purchasing, price modification, and product data usage may be restricted by some retailers.
+
+---
+
+## Core Concept
+
+Minimalist Bazaar acts as a marketplace layer between external retailers and customers.
+
+**Seller Workflow**
+1. Connect or select a supported external store
+2. Import product information
+3. Upload or edit product images, descriptions, and categories
+4. Set a custom sale price
+5. Publish the listing
+6. Monitor orders and delivery updates
+
+**Customer Workflow**
+1. Browse products
+2. Add items to cart
+3. Complete checkout
+4. Receive order tracking information
+5. View delivery estimates and order status
+
+**Order Fulfillment Workflow**
+1. Customer places an order
+2. Payment is captured
+3. The system creates a fulfillment request
+4. The product is purchased from the source retailer or forwarded to an approved fulfillment partner
+5. Customer shipping details are transmitted securely
+6. Delivery updates are synchronized with the platform
+
+---
+
+## Technology Stack
+
+**Frontend**
+- Framework: Next.js 15 (App Router)
+- Styling: Tailwind CSS
+- State Management: Zustand
+- Forms: React Hook Form + Zod
+- Authentication: Auth.js (NextAuth v5)
+
+**Backend**
+- Next.js API Routes / Server Actions
+- Node.js
+- MongoDB + Mongoose
+
+**Infrastructure**
+- Vercel (frontend deployment)
+- MongoDB Atlas
+- Cloudinary or AWS S3 (image storage)
+- Redis (caching and queues)
+- Stripe (payments)
+
+---
+
+## Development Roadmap
+
+### Phase 1 — Foundation ✅
+- [x] Initialize Next.js 15 project with TypeScript and Tailwind CSS
+- [x] Configure MongoDB and Mongoose with singleton connection
+- [x] Implement Auth.js (NextAuth v5) with credentials provider
+- [x] Edge-compatible middleware for JWT-based route protection
+- [x] User, Product, Order, and AffiliateLink Mongoose models
+- [x] Register and login pages with React Hook Form + Zod validation
+- [x] Base folder structure (`features/`, `services/`, `actions/`, `types/`)
+
+### Phase 2 — Product Management ✅
+- [x] Product CRUD API routes (`GET`, `POST`, `PATCH`, `DELETE`)
+- [x] Reset sale price to source price endpoint
+- [x] Seller dashboard with sidebar navigation
+- [x] Product listing table with status badges
+- [x] Create and edit product form (multi-image URLs, pricing, delivery estimate)
+- [x] Public storefront grid (`/products`)
+- [x] Product detail page (`/products/[id]`)
+- [x] Demo access button with auto-seeding (3 sample products)
+
+### Phase 3 — External Store Integration ✅
+- [x] Connector architecture (`services/store-connectors/`)
+- [x] Generic connector — Open Graph + JSON-LD scraper (works on most e-commerce sites)
+- [x] Amazon-aware connector with JSON-LD + OG tag parsing
+- [x] `/api/import` endpoint with auth + URL validation
+- [x] Import UI (`/dashboard/products/import`) — paste URL → auto-fills product form
+- [x] "Import URL" shortcut on products dashboard
+
+### Phase 4 — Checkout and Orders
+- [ ] Stripe payment integration
+- [ ] Shopping cart (Zustand store)
+- [ ] Secure checkout flow
+- [ ] Order creation and storage
+- [ ] Customer address handling (GDPR/CCPA compliant)
+
+### Phase 5 — Fulfillment
+- [ ] Order automation workflows
+- [ ] Fulfillment request creation after payment
+- [ ] Delivery estimate synchronization
+- [ ] Tracking update webhooks
+- [ ] Automatic order status updates
+
+### Phase 6 — Affiliate System
+- [ ] Affiliate link generation with unique slugs
+- [ ] Click and conversion tracking
+- [ ] Commission analytics dashboard
+- [ ] Shareable product URLs
+
+### Phase 7 — Launch
+- [ ] Performance optimization
+- [ ] Security review
+- [ ] Compliance review (GDPR, CCPA)
+- [ ] Production deployment to Vercel + MongoDB Atlas
+
+---
+
+## Key Features
+
+**Product Import System** — Import products from supported retailers, retrieving title, description, images, original price, availability, and delivery estimates.
+
+**Product Listing Management** — Edit descriptions, upload custom images, set custom pricing, toggle listing status, reset pricing to source, and manage listings in bulk.
+
+**Affiliate Marketing** — Associate products with affiliate links, track clicks and conversions, display commission analytics, and generate shareable URLs.
+
+**Dropshipping** — Create fulfillment requests after payment, transmit customer shipping info securely, track fulfillment status, and sync delivery estimates.
+
+**Customer Experience** — Product search and filtering, shopping cart, secure checkout, order history, shipment tracking, and email notifications.
+
+**Admin Dashboard** — User management, seller approvals, product moderation, order monitoring, revenue analytics, and affiliate performance metrics.
+
+---
+
+## Database Models
+
+```ts
+User {
+  name: string
+  email: string
+  role: "customer" | "seller" | "admin"
+}
+
+Product {
+  title: string
+  description: string
+  images: string[]
+  sourceStore: string
+  sourceUrl: string
+  sourcePrice: number
+  salePrice: number
+  deliveryEstimate: string
+  status: "draft" | "listed" | "disabled"
+}
+
+Order {
+  customerId: ObjectId
+  items: OrderItem[]
+  totalAmount: number
+  paymentStatus: string
+  fulfillmentStatus: string
+  shippingAddress: Address
+}
+
+AffiliateLink {
+  productId: ObjectId
+  sellerId: ObjectId
+  clicks: number
+  conversions: number
+}
+```
+
+---
+
+## Folder Structure
+
+```
+minimalist-bazaar/
+├── app/
+│   ├── (auth)/login/
+│   ├── (auth)/register/
+│   ├── api/auth/
+│   ├── api/products/
+│   ├── api/seed/
+│   ├── dashboard/
+│   └── products/
+├── components/
+│   ├── dashboard/
+│   ├── products/
+│   └── ui/
+├── features/
+│   ├── auth/
+│   ├── products/
+│   ├── orders/
+│   ├── affiliates/
+│   └── fulfillment/
+├── lib/
+│   ├── mongodb.ts
+│   ├── auth.ts
+│   └── payments.ts
+├── models/
+├── services/
+│   ├── store-connectors/
+│   ├── fulfillment/
+│   └── notifications/
+├── actions/
+├── types/
+├── auth.ts
+├── auth.config.ts
+└── middleware.ts
+```
+
+---
+
+## API Reference
+
+| Method | Route | Description |
+|--------|-------|-------------|
+| POST | `/api/auth/register` | Register a new user |
+| POST | `/api/auth/[...nextauth]` | Auth.js sign-in/sign-out |
+| GET | `/api/products` | List products |
+| POST | `/api/products` | Create a product |
+| GET | `/api/products/:id` | Get a product |
+| PATCH | `/api/products/:id` | Update a product |
+| DELETE | `/api/products/:id` | Delete a product |
+| POST | `/api/products/:id/reset-price` | Reset sale price to source price |
+| POST | `/api/seed` | Seed demo user and products (dev only) |
+
+---
+
+## Getting Started
+
+```bash
+# Install dependencies
+npm install
+
+# Copy environment variables
+cp .env.example .env.local
+# Fill in MONGODB_URI and AUTH_SECRET
+
+# Run the development server
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) and click **Try demo** for instant access with pre-seeded products.
+
+---
+
+## Legal and Compliance
+
+**Required checks before any retailer integration:**
+- Verify retailer API availability
+- Confirm automated purchasing is permitted
+- Confirm product image usage rights
+- Validate affiliate program rules
+- Review regional consumer protection laws
+
+**Privacy:** Store only necessary customer data (name, shipping address, email). Comply with GDPR, CCPA, and applicable local regulations.
+
+---
+
+## Future Enhancements
+
+- AI-generated product descriptions
+- Dynamic pricing recommendations
+- Multi-currency support
+- Multi-language support
+- Seller reputation system
+- Mobile application
+- Inventory forecasting
+
+---
+
+## Success Metrics
+
+- Number of active sellers
+- Conversion rate
+- Average order value
+- Affiliate revenue
+- Fulfillment success rate
+- Customer satisfaction score
+- Average delivery time
+- Return rate
