@@ -26,6 +26,12 @@ export interface IOrder extends Document {
   fulfillmentStatus: "unfulfilled" | "processing" | "shipped" | "delivered" | "cancelled";
   shippingAddress: ShippingAddress;
   stripePaymentIntentId?: string;
+  trackingNumber?: string;
+  carrier?: string;
+  trackingUrl?: string;
+  shippedAt?: Date;
+  deliveredAt?: Date;
+  customerEmail?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -71,6 +77,12 @@ const OrderSchema = new Schema<IOrder>(
     },
     shippingAddress: { type: ShippingAddressSchema, required: true },
     stripePaymentIntentId: { type: String },
+    trackingNumber: { type: String },
+    carrier: { type: String },
+    trackingUrl: { type: String },
+    shippedAt: { type: Date },
+    deliveredAt: { type: Date },
+    customerEmail: { type: String },
   },
   { timestamps: true }
 );

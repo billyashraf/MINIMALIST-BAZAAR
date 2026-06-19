@@ -50,6 +50,7 @@ export async function POST(request: Request) {
       totalAmount: (session.amount_total ?? 0) / 100,
       paymentStatus: "paid",
       fulfillmentStatus: "unfulfilled",
+      customerEmail: session.customer_details?.email ?? "",
       shippingAddress: {
         fullName: session.shipping_details?.name ?? "",
         line1: addr.line1 ?? "",

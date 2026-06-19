@@ -98,13 +98,17 @@ Minimalist Bazaar acts as a marketplace layer between external retailers and cus
 - [x] Order confirmation page (`/checkout/success`) with cart auto-clear
 - [x] Customer order history (`/orders`)
 - [x] Seller order view in dashboard (`/dashboard/orders`)
+- [ ] Add `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, and `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` to `.env.local`
 
-### Phase 5 — Fulfillment
-- [ ] Order automation workflows
-- [ ] Fulfillment request creation after payment
-- [ ] Delivery estimate synchronization
-- [ ] Tracking update webhooks
-- [ ] Automatic order status updates
+### Phase 5 — Fulfillment ✅
+- [x] Extended Order model with tracking fields (number, carrier, URL, shippedAt, deliveredAt)
+- [x] Fulfillment service (`services/fulfillment/`) — status transitions with email trigger
+- [x] Email notification service (`services/notifications/email.ts`) — nodemailer with console fallback
+- [x] `PATCH /api/orders/[id]/fulfill` — seller updates status + adds tracking info (auth-gated)
+- [x] Seller dashboard: per-order fulfill button with tracking modal (Mark processing → shipped → delivered)
+- [x] Customer order detail page (`/orders/[id]`) — visual progress tracker + tracking info
+- [x] Webhook captures customer email for shipping notifications
+- [ ] Add `EMAIL_HOST`, `EMAIL_USER`, `EMAIL_PASS` to `.env.local` to enable shipping emails
 
 ### Phase 6 — Affiliate System
 - [ ] Affiliate link generation with unique slugs

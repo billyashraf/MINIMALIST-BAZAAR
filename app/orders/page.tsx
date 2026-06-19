@@ -58,6 +58,8 @@ export default async function OrdersPage() {
               totalAmount: number;
               paymentStatus: string;
               fulfillmentStatus: string;
+              trackingNumber?: string;
+              carrier?: string;
             }) => (
               <div key={order._id} className="bg-white rounded-xl border border-gray-100 p-5">
                 <div className="flex items-start justify-between mb-3">
@@ -80,11 +82,22 @@ export default async function OrdersPage() {
                 </div>
                 <div className="space-y-1">
                   {order.items.map((item, i) => (
-                    <p key={i} className="text-sm text-gray-500">
+                    <p key={i} className="text-sm text-gray-500 line-clamp-1">
                       {item.title} × {item.quantity}
                     </p>
                   ))}
                 </div>
+                {order.trackingNumber && (
+                  <p className="text-xs text-gray-400 mt-2">
+                    {order.carrier} · {order.trackingNumber}
+                  </p>
+                )}
+                <Link
+                  href={`/orders/${order._id}`}
+                  className="inline-block mt-2 text-xs text-black underline underline-offset-2"
+                >
+                  View details
+                </Link>
               </div>
             ))}
           </div>
