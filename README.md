@@ -89,12 +89,15 @@ Minimalist Bazaar acts as a marketplace layer between external retailers and cus
 - [x] Import UI (`/dashboard/products/import`) — paste URL → auto-fills product form
 - [x] "Import URL" shortcut on products dashboard
 
-### Phase 4 — Checkout and Orders
-- [ ] Stripe payment integration
-- [ ] Shopping cart (Zustand store)
-- [ ] Secure checkout flow
-- [ ] Order creation and storage
-- [ ] Customer address handling (GDPR/CCPA compliant)
+### Phase 4 — Checkout and Orders ✅
+- [x] Zustand cart store with localStorage persistence + quantity controls
+- [x] Cart drawer (slide-out) with add/remove/update on all product pages
+- [x] Stripe Checkout (hosted) — PCI-compliant, no card data on our servers
+- [x] `/api/checkout` — creates Stripe session with shipping address collection
+- [x] `/api/fulfillment/webhook` — Stripe webhook creates Order on payment success
+- [x] Order confirmation page (`/checkout/success`) with cart auto-clear
+- [x] Customer order history (`/orders`)
+- [x] Seller order view in dashboard (`/dashboard/orders`)
 
 ### Phase 5 — Fulfillment
 - [ ] Order automation workflows

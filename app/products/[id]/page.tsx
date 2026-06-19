@@ -3,6 +3,8 @@ import Product from "@/models/Product";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import StorefrontHeader from "@/components/storefront/StorefrontHeader";
+import AddToCartButton from "@/components/cart/AddToCartButton";
 
 export default async function ProductDetailPage({
   params,
@@ -14,18 +16,9 @@ export default async function ProductDetailPage({
   const product = await Product.findOne({ _id: id, status: "listed" }).lean();
   if (!product) notFound();
 
-  const margin = (
-    ((product.salePrice - product.sourcePrice) / product.sourcePrice) *
-    100
-  ).toFixed(0);
-
   return (
     <div className="min-h-screen bg-white">
-      <header className="border-b border-gray-100 px-6 py-4">
-        <Link href="/products" className="text-sm text-gray-500 hover:text-gray-900">
-          ← Back to shop
-        </Link>
-      </header>
+      <StorefrontHeader />
 
       <main className="max-w-4xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-2 gap-12">
         <div className="relative aspect-square rounded-xl overflow-hidden bg-gray-50">
@@ -41,6 +34,9 @@ export default async function ProductDetailPage({
         </div>
 
         <div className="flex flex-col">
+          <Link href="/products" className="text-sm text-gray-400 hover:text-gray-700 mb-4 inline-block">
+            ← Back to shop
+          </Link>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">{product.title}</h1>
           <p className="text-gray-500 text-sm mb-6 leading-relaxed">{product.description}</p>
 
@@ -51,19 +47,15 @@ export default async function ProductDetailPage({
           </div>
 
           {product.deliveryEstimate && (
-            <p className="text-sm text-gray-400 mb-6">
-              Delivery: {product.deliveryEstimate}
-            </p>
+            <p className="text-sm text-gray-400 mb-6">Delivery: {product.deliveryEstimate}</p>
           )}
 
-          <a
-            href={product.sourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full py-3 bg-black text-white text-center rounded-lg hover:bg-gray-900 transition-colors font-medium"
-          >
-            Buy now
-          </a>
+          <AddToCartButton
+            productId={String(product._id)}
+            title={product.title}
+            image={product.images[0] ?? ""}
+            price={product.salePrice}
+          />
 
           <p className="mt-4 text-xs text-gray-400 text-center">
             Sold via {product.sourceStore}

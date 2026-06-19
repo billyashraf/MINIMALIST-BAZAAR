@@ -2,6 +2,7 @@ import { connectDB } from "@/lib/mongodb";
 import Product from "@/models/Product";
 import Image from "next/image";
 import Link from "next/link";
+import StorefrontHeader from "@/components/storefront/StorefrontHeader";
 
 export const dynamic = "force-dynamic";
 
@@ -13,17 +14,7 @@ export default async function StorefrontPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <header className="border-b border-gray-100 px-6 py-4 flex items-center justify-between">
-        <Link href="/" className="text-lg font-bold tracking-tight">
-          Minimalist Bazaar
-        </Link>
-        <Link
-          href="/login"
-          className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
-        >
-          Sign in
-        </Link>
-      </header>
+      <StorefrontHeader />
 
       <main className="max-w-6xl mx-auto px-6 py-12">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Shop</h1>
@@ -54,9 +45,7 @@ export default async function StorefrontPage() {
                   <h2 className="font-medium text-gray-900 mb-1 line-clamp-1">{p.title}</h2>
                   <p className="text-gray-400 text-sm line-clamp-2 mb-3">{p.description}</p>
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-gray-900">
-                      ${p.salePrice.toFixed(2)}
-                    </span>
+                    <span className="font-semibold text-gray-900">${p.salePrice.toFixed(2)}</span>
                     {p.deliveryEstimate && (
                       <span className="text-xs text-gray-400">{p.deliveryEstimate}</span>
                     )}
