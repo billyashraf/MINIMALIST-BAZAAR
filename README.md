@@ -120,8 +120,16 @@ Minimalist Bazaar acts as a marketplace layer between external retailers and cus
 - [x] Create/delete affiliate links per product directly from dashboard
 - [x] One-click copy shareable URL button
 
-### Phase 7 — Launch
-- [ ] Performance optimization
+### Phase 7 — Launch ✅
+- [x] Security headers via `next.config.ts` (CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, `poweredByHeader: false`)
+- [x] Global SEO metadata with title template, Open Graph, and Twitter Card tags
+- [x] Dynamic `generateMetadata` on product detail pages (title, description, OG image)
+- [x] `sitemap.xml` — static routes + all live product pages
+- [x] `robots.txt` — crawlable public pages, blocked dashboard/api/checkout
+- [x] Custom 404 page (`app/not-found.tsx`) with navigation links
+- [x] Global error boundary (`app/error.tsx`) with retry button
+- [x] Loading skeletons for dashboard, products, and orders routes
+- [x] Dashboard overview enriched with revenue, pending orders, affiliate stats, and recent orders table
 - [ ] Security review
 - [ ] Compliance review (GDPR, CCPA)
 - [ ] Production deployment to Vercel + MongoDB Atlas

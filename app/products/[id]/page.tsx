@@ -5,6 +5,28 @@ import Image from "next/image";
 import Link from "next/link";
 import StorefrontHeader from "@/components/storefront/StorefrontHeader";
 import AddToCartButton from "@/components/cart/AddToCartButton";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  await connectDB();
+  const product = await Product.findOne({ _id: id, status: "listed" }).lean();
+  if (!product) return {};
+
+  return {
+    title: product.title,
+    description: product.description?.slice(0, 160) || product.title,
+    openGraph: {
+      title: product.title,
+      description: product.description?.slice(0, 160) || product.title,
+      images: product.images[0] ? [{ url: product.images[0] }] : [],
+    },
+  };
+}
 
 export default async function ProductDetailPage({
   params,
