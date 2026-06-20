@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { getStripe } from "@/lib/payments";
+import { cookies } from "next/headers";
 import { z } from "zod";
 
 const cartItemSchema = z.object({
@@ -50,6 +51,7 @@ export async function POST(request: Request) {
     },
     metadata: {
       customerId: session?.user?.id ?? "guest",
+      affiliateSlug: (await cookies()).get("aff")?.value ?? "",
       items: JSON.stringify(
         items.map((i) => ({
           productId: i.productId,

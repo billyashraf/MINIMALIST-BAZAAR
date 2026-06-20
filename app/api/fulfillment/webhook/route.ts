@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getStripe } from "@/lib/payments";
 import { connectDB } from "@/lib/mongodb";
 import Order from "@/models/Order";
+import AffiliateLink from "@/models/AffiliateLink";
 import type Stripe from "stripe";
 
 export const dynamic = "force-dynamic";
@@ -39,6 +40,7 @@ export async function POST(request: Request) {
 
     const items = JSON.parse(session.metadata?.items ?? "[]");
     const customerId = session.metadata?.customerId;
+    const affiliateSlug = session.metadata?.affiliateSlug;
     const addr = session.shipping_details?.address;
 
     if (!addr) return NextResponse.json({ ok: true });
@@ -62,6 +64,14 @@ export async function POST(request: Request) {
       },
       stripePaymentIntentId: session.payment_intent as string,
     });
+
+    // Track affiliate conversion
+    if (affiliateSlug) {
+      await AffiliateLink.findOneAndUpdate(
+        { slug: affiliateSlug },
+        { $inc: { conversions: 1 } }
+      );
+    }
   }
 
   return NextResponse.json({ ok: true });

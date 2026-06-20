@@ -9,7 +9,7 @@ const nav = [
   { label: "Products", href: "/dashboard/products" },
   { label: "Import product", href: "/dashboard/products/import", indent: true },
   { label: "Orders", href: "/dashboard/orders" },
-  { label: "Analytics", href: "/dashboard/analytics" },
+  { label: "Analytics & Affiliates", href: "/dashboard/analytics" },
 ];
 
 interface Props {

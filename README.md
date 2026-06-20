@@ -110,11 +110,15 @@ Minimalist Bazaar acts as a marketplace layer between external retailers and cus
 - [x] Webhook captures customer email for shipping notifications
 - [ ] Add `EMAIL_HOST`, `EMAIL_USER`, `EMAIL_PASS` to `.env.local` to enable shipping emails
 
-### Phase 6 — Affiliate System
-- [ ] Affiliate link generation with unique slugs
-- [ ] Click and conversion tracking
-- [ ] Commission analytics dashboard
-- [ ] Shareable product URLs
+### Phase 6 — Affiliate System ✅
+- [x] `/go/[slug]` redirect route — increments click count, sets 30-day attribution cookie, redirects to product
+- [x] Affiliate link CRUD API (`GET /api/affiliate/links`, `POST`, `DELETE /api/affiliate/links/[id]`)
+- [x] Auto-slug generation with collision detection (crypto.randomBytes)
+- [x] Click tracking on every `/go/[slug]` visit
+- [x] Conversion tracking — checkout passes affiliate slug in Stripe metadata; webhook increments conversions on payment
+- [x] Analytics & Affiliates dashboard (`/dashboard/analytics`) — stats cards (links, clicks, conversions, rate), per-link table with progress bars
+- [x] Create/delete affiliate links per product directly from dashboard
+- [x] One-click copy shareable URL button
 
 ### Phase 7 — Launch
 - [ ] Performance optimization
