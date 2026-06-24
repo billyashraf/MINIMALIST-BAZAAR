@@ -4,6 +4,8 @@ import { connectDB } from "@/lib/mongodb";
 import Product from "@/models/Product";
 import { z } from "zod";
 
+const PRODUCT_LIMIT = 10;
+
 const createSchema = z.object({
   title: z.string().min(2).max(200),
   description: z.string().min(10),
@@ -44,6 +46,19 @@ export async function POST(request: Request) {
   }
 
   await connectDB();
+
+  // Non-admin users are capped at 10 products
+  const role = (session.user as { role?: string }).role;
+  if (role !== "admin") {
+    const count = await Product.countDocuments({ sellerId: session.user.id });
+    if (count >= PRODUCT_LIMIT) {
+      return NextResponse.json(
+        { error: `You have reached the ${PRODUCT_LIMIT}-product limit. Contact admin to be promoted.` },
+        { status: 403 }
+      );
+    }
+  }
+
   const product = await Product.create({ ...parsed.data, sellerId: session.user.id });
   return NextResponse.json(product, { status: 201 });
 }

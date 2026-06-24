@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react";
 
+const PRODUCT_LIMIT = 10;
+
 interface UserRow {
   _id: string;
   name: string;
   email: string;
   role: string;
-  maxOrders: number;
-  orderCount: number;
+  productCount: number;
   createdAt: string;
 }
 
@@ -39,7 +40,7 @@ export default function UsersPage() {
     const res = await fetch(`/api/admin/users/${id}/promote`, { method: "PATCH" });
     if (res.ok) {
       setUsers((prev) =>
-        prev.map((u) => (u._id === id ? { ...u, maxOrders: -1 } : u))
+        prev.map((u) => (u._id === id ? { ...u, role: "admin" } : u))
       );
     }
     setPromoting(null);
@@ -63,15 +64,15 @@ export default function UsersPage() {
     );
   }
 
-  const limited = users.filter((u) => u.maxOrders !== -1);
-  const promoted = users.filter((u) => u.maxOrders === -1);
+  const admins = users.filter((u) => u.role === "admin");
+  const regular = users.filter((u) => u.role !== "admin");
 
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-gray-900 mb-1">User Management</h1>
         <p className="text-gray-500 text-sm">
-          New users can place up to 5 orders. Promote them to remove the limit.
+          Regular users can list up to {PRODUCT_LIMIT} products (personal page only). Promote to admin for unlimited products and home-page visibility.
         </p>
       </div>
 
@@ -81,12 +82,12 @@ export default function UsersPage() {
           <p className="text-2xl font-bold text-gray-900">{users.length}</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Limited</p>
-          <p className="text-2xl font-bold text-gray-900">{limited.length}</p>
+          <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Regular Users</p>
+          <p className="text-2xl font-bold text-gray-900">{regular.length}</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Promoted</p>
-          <p className="text-2xl font-bold text-green-600">{promoted.length}</p>
+          <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Admins</p>
+          <p className="text-2xl font-bold text-green-600">{admins.length}</p>
         </div>
       </div>
 
@@ -97,18 +98,10 @@ export default function UsersPage() {
         <table className="w-full text-sm">
           <thead className="border-b border-gray-100 bg-gray-50">
             <tr>
-              <th className="text-left px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">
-                User
-              </th>
-              <th className="text-left px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">
-                Role
-              </th>
-              <th className="text-left px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">
-                Orders placed
-              </th>
-              <th className="text-left px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">
-                Order limit
-              </th>
+              <th className="text-left px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">User</th>
+              <th className="text-left px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">Role</th>
+              <th className="text-left px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">Products</th>
+              <th className="text-left px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">Visibility</th>
               <th className="px-5 py-3" />
             </tr>
           </thead>
@@ -124,35 +117,33 @@ export default function UsersPage() {
                     className={`capitalize text-xs px-2 py-0.5 rounded-full font-medium ${
                       u.role === "admin"
                         ? "bg-black text-white"
-                        : u.role === "seller"
-                        ? "bg-blue-50 text-blue-700"
                         : "bg-gray-100 text-gray-600"
                     }`}
                   >
                     {u.role}
                   </span>
                 </td>
-                <td className="px-5 py-3 text-gray-600">
-                  {u.orderCount}
-                  {u.maxOrders !== -1 && (
-                    <span className="text-gray-400"> / {u.maxOrders}</span>
+                <td className="px-5 py-3 text-gray-700">
+                  {u.productCount}
+                  {u.role !== "admin" && (
+                    <span className="text-gray-400"> / {PRODUCT_LIMIT}</span>
                   )}
                 </td>
                 <td className="px-5 py-3">
-                  {u.maxOrders === -1 ? (
-                    <span className="text-green-600 font-medium text-xs">Unlimited</span>
+                  {u.role === "admin" ? (
+                    <span className="text-green-600 text-xs font-medium">Home page</span>
                   ) : (
-                    <span className="text-gray-600">{u.maxOrders} orders</span>
+                    <span className="text-gray-500 text-xs">Personal page only</span>
                   )}
                 </td>
                 <td className="px-5 py-3 text-right">
-                  {u.maxOrders !== -1 && (
+                  {u.role !== "admin" && (
                     <button
                       onClick={() => promote(u._id)}
                       disabled={promoting === u._id}
                       className="px-3 py-1.5 text-xs bg-black text-white rounded-lg hover:bg-gray-900 disabled:opacity-50 transition-colors"
                     >
-                      {promoting === u._id ? "Promoting…" : "Promote"}
+                      {promoting === u._id ? "Promoting…" : "Promote to admin"}
                     </button>
                   )}
                 </td>

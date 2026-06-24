@@ -14,20 +14,17 @@ export default async function StorefrontHeader() {
         <Link href="/" className="text-lg font-bold tracking-tight text-gray-900">
           Minimalist Bazaar
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
+          <Link href="/sellers" className="text-sm text-gray-700 hover:text-gray-900 transition-colors">
+            Sellers
+          </Link>
           {session?.user ? (
             <>
-              <Link
-                href="/orders"
-                className="text-sm text-gray-700 hover:text-gray-900 transition-colors px-3 py-1.5"
-              >
+              <Link href="/orders" className="text-sm text-gray-700 hover:text-gray-900 transition-colors">
                 My orders
               </Link>
               {role === "admin" && (
-                <Link
-                  href="/dashboard"
-                  className="text-sm text-gray-700 hover:text-gray-900 transition-colors px-3 py-1.5"
-                >
+                <Link href="/dashboard" className="text-sm text-gray-700 hover:text-gray-900 transition-colors">
                   Dashboard
                 </Link>
               )}
@@ -35,16 +32,10 @@ export default async function StorefrontHeader() {
             </>
           ) : (
             <>
-              <Link
-                href="/login"
-                className="text-sm text-gray-700 hover:text-gray-900 transition-colors px-3 py-1.5"
-              >
+              <Link href="/login" className="text-sm text-gray-700 hover:text-gray-900 transition-colors">
                 Sign in
               </Link>
-              <Link
-                href="/register"
-                className="text-sm px-3 py-1.5 bg-black text-white rounded-lg hover:bg-gray-900 transition-colors"
-              >
+              <Link href="/register" className="text-sm px-3 py-1.5 bg-black text-white rounded-lg hover:bg-gray-900 transition-colors">
                 Register
               </Link>
             </>

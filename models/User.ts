@@ -5,7 +5,6 @@ export interface IUser extends Document {
   email: string;
   password: string;
   role: "customer" | "seller" | "admin";
-  maxOrders: number; // -1 = unlimited (promoted by admin)
   createdAt: Date;
   updatedAt: Date;
 }
@@ -19,10 +18,6 @@ const UserSchema = new Schema<IUser>(
       type: String,
       enum: ["customer", "seller", "admin"],
       default: "customer",
-    },
-    maxOrders: {
-      type: Number,
-      default: 5, // -1 means unlimited (admin-promoted)
     },
   },
   { timestamps: true }

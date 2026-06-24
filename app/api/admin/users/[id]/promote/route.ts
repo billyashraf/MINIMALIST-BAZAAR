@@ -15,7 +15,7 @@ export async function PATCH(
   const { id } = await params;
   await connectDB();
 
-  const user = await User.findByIdAndUpdate(id, { maxOrders: -1 }, { new: true }).select(
+  const user = await User.findByIdAndUpdate(id, { role: "admin" }, { new: true }).select(
     "-password"
   );
 
@@ -23,5 +23,5 @@ export async function PATCH(
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  return NextResponse.json({ id: user._id.toString(), maxOrders: user.maxOrders });
+  return NextResponse.json({ id: user._id.toString(), role: user.role });
 }

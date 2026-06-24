@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { connectDB } from "@/lib/mongodb";
 import User from "@/models/User";
-import Order from "@/models/Order";
+import Product from "@/models/Product";
 import mongoose from "mongoose";
 
 export const dynamic = "force-dynamic";
@@ -17,20 +17,19 @@ export async function GET() {
   const users = await User.find({}).select("-password").sort({ createdAt: -1 }).lean();
 
   const userIds = users.map((u) => u._id as mongoose.Types.ObjectId);
-  const orderCounts = await Order.aggregate([
-    { $match: { customerId: { $in: userIds }, paymentStatus: "paid" } },
-    { $group: { _id: "$customerId", count: { $sum: 1 } } },
+  const productCounts = await Product.aggregate([
+    { $match: { sellerId: { $in: userIds } } },
+    { $group: { _id: "$sellerId", count: { $sum: 1 } } },
   ]);
 
-  const countMap = new Map(orderCounts.map((o) => [o._id.toString(), o.count as number]));
+  const countMap = new Map(productCounts.map((p) => [p._id.toString(), p.count as number]));
 
   const result = users.map((u) => ({
     _id: u._id.toString(),
     name: u.name,
     email: u.email,
     role: u.role,
-    maxOrders: u.maxOrders,
-    orderCount: countMap.get(u._id.toString()) ?? 0,
+    productCount: countMap.get(u._id.toString()) ?? 0,
     createdAt: u.createdAt,
   }));
 
