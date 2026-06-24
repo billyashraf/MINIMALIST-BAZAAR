@@ -56,11 +56,11 @@ export default async function ProductDetailPage({
         </div>
 
         <div className="flex flex-col">
-          <Link href="/products" className="text-sm text-gray-400 hover:text-gray-700 mb-4 inline-block">
+          <Link href="/products" className="text-sm text-gray-700 hover:text-gray-900 mb-4 inline-block">
             ← Back to shop
           </Link>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">{product.title}</h1>
-          <p className="text-gray-500 text-sm mb-6 leading-relaxed">{product.description}</p>
+          <p className="text-gray-700 text-sm mb-6 leading-relaxed">{product.description}</p>
 
           <div className="flex items-baseline gap-3 mb-6">
             <span className="text-3xl font-bold text-gray-900">
@@ -69,7 +69,7 @@ export default async function ProductDetailPage({
           </div>
 
           {product.deliveryEstimate && (
-            <p className="text-sm text-gray-400 mb-6">Delivery: {product.deliveryEstimate}</p>
+            <p className="text-sm text-gray-700 mb-6">Delivery: {product.deliveryEstimate}</p>
           )}
 
           <AddToCartButton
@@ -79,7 +79,7 @@ export default async function ProductDetailPage({
             price={product.salePrice}
           />
 
-          <p className="mt-4 text-xs text-gray-400 text-center">
+          <p className="mt-4 text-xs text-gray-700 text-center">
             Sold via {product.sourceStore}
           </p>
         </div>
