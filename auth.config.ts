@@ -5,7 +5,22 @@ export const authConfig: NextAuthConfig = {
     signIn: "/login",
   },
   callbacks: {
+    session({ session, token }) {
+      if (token) {
+        session.user.id = token.id as string;
+        session.user.role = (token.role as string) ?? "customer";
+        session.user.blocked = (token.blocked as boolean) ?? false;
+      }
+      return session;
+    },
     authorized({ auth, request: { nextUrl } }) {
+      const user = auth?.user as { blocked?: boolean } | undefined;
+
+      // Blocked users are treated as logged-out everywhere
+      if (user?.blocked) {
+        return Response.redirect(new URL("/login", nextUrl));
+      }
+
       const isLoggedIn = !!auth?.user;
       const isProtected =
         nextUrl.pathname.startsWith("/dashboard") ||

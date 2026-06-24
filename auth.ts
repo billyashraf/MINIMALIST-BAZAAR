@@ -26,11 +26,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const valid = await bcryptjs.compare(parsed.data.password, user.password);
         if (!valid) return null;
 
+        // Blocked users cannot sign in
+        if (user.blocked) return null;
+
         return {
           id: user._id.toString(),
           name: user.name,
           email: user.email,
           role: user.role,
+          blocked: false,
         };
       },
     }),
@@ -41,15 +45,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user) {
         token.id = user.id;
         token.role = (user as { role?: string }).role;
+        token.blocked = (user as { blocked?: boolean }).blocked ?? false;
       }
       return token;
-    },
-    session({ session, token }) {
-      if (token) {
-        session.user.id = token.id as string;
-        (session.user as { role?: string }).role = token.role as string;
-      }
-      return session;
     },
   },
   session: { strategy: "jwt" },

@@ -29,6 +29,7 @@ export async function GET() {
     name: u.name,
     email: u.email,
     role: u.role,
+    blocked: u.blocked ?? false,
     productCount: countMap.get(u._id.toString()) ?? 0,
     createdAt: u.createdAt,
   }));

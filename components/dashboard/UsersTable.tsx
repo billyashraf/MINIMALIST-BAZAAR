@@ -9,6 +9,7 @@ interface UserRow {
   name: string;
   email: string;
   role: string;
+  blocked: boolean;
   productCount: number;
   createdAt: string;
 }
@@ -36,6 +37,7 @@ export default function UsersTable() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
+  const [blocking, setBlocking] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/admin/users")
@@ -64,6 +66,21 @@ export default function UsersTable() {
       setUsers((prev) => prev.map((u) => (u._id === id ? { ...u, role } : u)));
     }
     setBusy(null);
+  };
+
+  const toggleBlock = async (id: string, currentlyBlocked: boolean) => {
+    setBlocking(id);
+    const res = await fetch(`/api/admin/users/${id}/block`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ blocked: !currentlyBlocked }),
+    });
+    if (res.ok) {
+      setUsers((prev) =>
+        prev.map((u) => (u._id === id ? { ...u, blocked: !currentlyBlocked } : u))
+      );
+    }
+    setBlocking(null);
   };
 
   const demote = async (id: string, currentRole: string) => {
@@ -128,6 +145,7 @@ export default function UsersTable() {
             <tr>
               <th className="text-left px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">User</th>
               <th className="text-left px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">Role</th>
+              <th className="text-left px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">Status</th>
               <th className="text-left px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">Products</th>
               <th className="text-left px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">Visibility</th>
               <th className="px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide text-right">Actions</th>
@@ -144,6 +162,13 @@ export default function UsersTable() {
                   <span className={`capitalize text-xs px-2 py-0.5 rounded-full font-medium ${roleBadge[u.role] ?? "bg-gray-100 text-gray-600"}`}>
                     {u.role}
                   </span>
+                </td>
+                <td className="px-5 py-3">
+                  {u.blocked ? (
+                    <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-red-50 text-red-600">Blocked</span>
+                  ) : (
+                    <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-green-50 text-green-600">Active</span>
+                  )}
                 </td>
                 <td className="px-5 py-3 text-gray-700">
                   {u.role === "customer" ? (
@@ -164,6 +189,18 @@ export default function UsersTable() {
                 </td>
                 <td className="px-5 py-3">
                   <div className="flex items-center justify-end gap-2">
+                    {/* Block / Unblock */}
+                    <button
+                      onClick={() => toggleBlock(u._id, u.blocked)}
+                      disabled={blocking === u._id}
+                      className={`px-3 py-1.5 text-xs rounded-lg disabled:opacity-50 transition-colors ${
+                        u.blocked
+                          ? "bg-green-600 text-white hover:bg-green-700"
+                          : "bg-red-500 text-white hover:bg-red-600"
+                      }`}
+                    >
+                      {blocking === u._id ? "…" : u.blocked ? "Unblock" : "Block"}
+                    </button>
                     {u.role === "customer" && (
                       <button
                         onClick={() => promote(u._id, "seller")}
