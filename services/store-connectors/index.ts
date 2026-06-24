@@ -1,10 +1,20 @@
 import type { StoreConnector, ConnectorResult } from "./types";
 import { amazonConnector } from "./amazon";
+import { shopifyConnector } from "./shopify";
+import { ebayConnector } from "./ebay";
+import { etsyConnector } from "./etsy";
+import { aliexpressConnector } from "./aliexpress";
+import { walmartConnector } from "./walmart";
 import { genericConnector } from "./generic";
 
-// Ordered: specific connectors first, generic fallback last
+// Specific connectors checked first; generic catches everything else
 const connectors: StoreConnector[] = [
   amazonConnector,
+  ebayConnector,
+  etsyConnector,
+  aliexpressConnector,
+  walmartConnector,
+  shopifyConnector, // must be before generic (matches /products/ URLs)
   genericConnector,
 ];
 
