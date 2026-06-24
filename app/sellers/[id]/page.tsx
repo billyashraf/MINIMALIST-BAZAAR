@@ -38,6 +38,7 @@ export default async function SellerPage({
     .lean();
 
   const isAdmin = seller.role === "admin";
+  const isSeller = seller.role === "seller";
 
   return (
     <div className="min-h-screen bg-white">
@@ -54,10 +55,14 @@ export default async function SellerPage({
               <h1 className="text-2xl font-bold text-gray-900">{seller.name}&apos;s Bazaar</h1>
               <span
                 className={`text-xs px-2 py-0.5 rounded font-medium ${
-                  isAdmin ? "bg-black text-white" : "bg-gray-100 text-gray-700"
+                  isAdmin
+                    ? "bg-black text-white"
+                    : isSeller
+                    ? "bg-blue-50 text-blue-700"
+                    : "bg-gray-100 text-gray-700"
                 }`}
               >
-                {isAdmin ? "Admin" : "User"}
+                {isAdmin ? "Admin" : isSeller ? "Seller" : "User"}
               </span>
             </div>
             <p className="text-gray-700 text-sm">

@@ -13,12 +13,29 @@ interface UserRow {
   createdAt: string;
 }
 
+const roleBadge: Record<string, string> = {
+  customer: "bg-gray-100 text-gray-600",
+  seller: "bg-blue-50 text-blue-700",
+  admin: "bg-black text-white",
+};
+
+const roleVisibility: Record<string, string> = {
+  customer: "Cannot list products",
+  seller: "Personal page only",
+  admin: "Home page",
+};
+
+const roleVisibilityColor: Record<string, string> = {
+  customer: "text-gray-400",
+  seller: "text-blue-600",
+  admin: "text-green-600",
+};
+
 export default function UsersPage() {
   const [users, setUsers] = useState<UserRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [promoting, setPromoting] = useState<string | null>(null);
-  const [demoting, setDemoting] = useState<string | null>(null);
+  const [busy, setBusy] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/admin/users")
@@ -36,26 +53,27 @@ export default function UsersPage() {
       });
   }, []);
 
-  const promote = async (id: string) => {
-    setPromoting(id);
-    const res = await fetch(`/api/admin/users/${id}/promote`, { method: "PATCH" });
+  const promote = async (id: string, role: "seller" | "admin") => {
+    setBusy(id + role);
+    const res = await fetch(`/api/admin/users/${id}/promote`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ role }),
+    });
     if (res.ok) {
-      setUsers((prev) =>
-        prev.map((u) => (u._id === id ? { ...u, role: "admin" } : u))
-      );
+      setUsers((prev) => prev.map((u) => (u._id === id ? { ...u, role } : u)));
     }
-    setPromoting(null);
+    setBusy(null);
   };
 
-  const demote = async (id: string) => {
-    setDemoting(id);
+  const demote = async (id: string, currentRole: string) => {
+    setBusy(id + "demote");
     const res = await fetch(`/api/admin/users/${id}/demote`, { method: "PATCH" });
     if (res.ok) {
-      setUsers((prev) =>
-        prev.map((u) => (u._id === id ? { ...u, role: "customer" } : u))
-      );
+      const next = currentRole === "admin" ? "seller" : "customer";
+      setUsers((prev) => prev.map((u) => (u._id === id ? { ...u, role: next } : u)));
     }
-    setDemoting(null);
+    setBusy(null);
   };
 
   if (loading) {
@@ -76,26 +94,31 @@ export default function UsersPage() {
     );
   }
 
+  const customers = users.filter((u) => u.role === "customer");
+  const sellers = users.filter((u) => u.role === "seller");
   const admins = users.filter((u) => u.role === "admin");
-  const regular = users.filter((u) => u.role !== "admin");
 
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-gray-900 mb-1">User Management</h1>
         <p className="text-gray-500 text-sm">
-          Regular users can list up to {PRODUCT_LIMIT} products (personal page only). Promote to admin for unlimited products and home-page visibility.
+          Customers browse only · Sellers get up to {PRODUCT_LIMIT} products on their personal page · Admins get unlimited products on the home page.
         </p>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-4 gap-4">
         <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Total Users</p>
+          <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Total</p>
           <p className="text-2xl font-bold text-gray-900">{users.length}</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Regular Users</p>
-          <p className="text-2xl font-bold text-gray-900">{regular.length}</p>
+          <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Customers</p>
+          <p className="text-2xl font-bold text-gray-900">{customers.length}</p>
+        </div>
+        <div className="bg-white rounded-xl border border-gray-100 p-5">
+          <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Sellers</p>
+          <p className="text-2xl font-bold text-blue-600">{sellers.length}</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-100 p-5">
           <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Admins</p>
@@ -114,7 +137,7 @@ export default function UsersPage() {
               <th className="text-left px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">Role</th>
               <th className="text-left px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">Products</th>
               <th className="text-left px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">Visibility</th>
-              <th className="px-5 py-3" />
+              <th className="px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
@@ -125,47 +148,64 @@ export default function UsersPage() {
                   <p className="text-xs text-gray-400">{u.email}</p>
                 </td>
                 <td className="px-5 py-3">
-                  <span
-                    className={`capitalize text-xs px-2 py-0.5 rounded-full font-medium ${
-                      u.role === "admin"
-                        ? "bg-black text-white"
-                        : "bg-gray-100 text-gray-600"
-                    }`}
-                  >
+                  <span className={`capitalize text-xs px-2 py-0.5 rounded-full font-medium ${roleBadge[u.role] ?? "bg-gray-100 text-gray-600"}`}>
                     {u.role}
                   </span>
                 </td>
                 <td className="px-5 py-3 text-gray-700">
-                  {u.productCount}
-                  {u.role !== "admin" && (
-                    <span className="text-gray-400"> / {PRODUCT_LIMIT}</span>
+                  {u.role === "customer" ? (
+                    <span className="text-gray-400">—</span>
+                  ) : (
+                    <>
+                      {u.productCount}
+                      {u.role === "seller" && (
+                        <span className="text-gray-400"> / {PRODUCT_LIMIT}</span>
+                      )}
+                    </>
                   )}
                 </td>
                 <td className="px-5 py-3">
-                  {u.role === "admin" ? (
-                    <span className="text-green-600 text-xs font-medium">Home page</span>
-                  ) : (
-                    <span className="text-gray-500 text-xs">Personal page only</span>
-                  )}
+                  <span className={`text-xs font-medium ${roleVisibilityColor[u.role] ?? "text-gray-400"}`}>
+                    {roleVisibility[u.role]}
+                  </span>
                 </td>
-                <td className="px-5 py-3 text-right">
-                  {u.role !== "admin" ? (
-                    <button
-                      onClick={() => promote(u._id)}
-                      disabled={promoting === u._id}
-                      className="px-3 py-1.5 text-xs bg-black text-white rounded-lg hover:bg-gray-900 disabled:opacity-50 transition-colors"
-                    >
-                      {promoting === u._id ? "Promoting…" : "Promote to admin"}
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => demote(u._id)}
-                      disabled={demoting === u._id}
-                      className="px-3 py-1.5 text-xs border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors"
-                    >
-                      {demoting === u._id ? "Demoting…" : "Demote"}
-                    </button>
-                  )}
+                <td className="px-5 py-3">
+                  <div className="flex items-center justify-end gap-2">
+                    {/* Promote to seller */}
+                    {u.role === "customer" && (
+                      <button
+                        onClick={() => promote(u._id, "seller")}
+                        disabled={busy === u._id + "seller"}
+                        className="px-3 py-1.5 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                      >
+                        {busy === u._id + "seller" ? "…" : "→ Seller"}
+                      </button>
+                    )}
+                    {/* Promote to admin */}
+                    {(u.role === "customer" || u.role === "seller") && (
+                      <button
+                        onClick={() => promote(u._id, "admin")}
+                        disabled={busy === u._id + "admin"}
+                        className="px-3 py-1.5 text-xs bg-black text-white rounded-lg hover:bg-gray-800 disabled:opacity-50 transition-colors"
+                      >
+                        {busy === u._id + "admin" ? "…" : "→ Admin"}
+                      </button>
+                    )}
+                    {/* Demote */}
+                    {u.role !== "customer" && (
+                      <button
+                        onClick={() => demote(u._id, u.role)}
+                        disabled={busy === u._id + "demote"}
+                        className="px-3 py-1.5 text-xs border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors"
+                      >
+                        {busy === u._id + "demote"
+                          ? "…"
+                          : u.role === "admin"
+                          ? "← Seller"
+                          : "← User"}
+                      </button>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}

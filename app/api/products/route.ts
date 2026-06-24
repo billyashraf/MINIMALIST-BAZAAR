@@ -47,13 +47,22 @@ export async function POST(request: Request) {
 
   await connectDB();
 
-  // Non-admin users are capped at 10 products
   const role = (session.user as { role?: string }).role;
-  if (role !== "admin") {
+
+  // Only sellers and admins can list products
+  if (role !== "seller" && role !== "admin") {
+    return NextResponse.json(
+      { error: "You need to be a seller to list products. Contact admin to be promoted." },
+      { status: 403 }
+    );
+  }
+
+  // Sellers are capped at 10 products
+  if (role === "seller") {
     const count = await Product.countDocuments({ sellerId: session.user.id });
     if (count >= PRODUCT_LIMIT) {
       return NextResponse.json(
-        { error: `You have reached the ${PRODUCT_LIMIT}-product limit. Contact admin to be promoted.` },
+        { error: `You have reached the ${PRODUCT_LIMIT}-product limit. Contact admin to be promoted to admin for unlimited listings.` },
         { status: 403 }
       );
     }

@@ -45,6 +45,7 @@ export default async function SellersPage() {
               const id = seller._id.toString();
               const productCount = countMap.get(id) ?? 0;
               const isAdmin = seller.role === "admin";
+              const isSeller = seller.role === "seller";
 
               return (
                 <Link
@@ -64,10 +65,12 @@ export default async function SellersPage() {
                         className={`text-xs px-1.5 py-0.5 rounded font-medium shrink-0 ${
                           isAdmin
                             ? "bg-black text-white"
+                            : isSeller
+                            ? "bg-blue-50 text-blue-700"
                             : "bg-gray-100 text-gray-600"
                         }`}
                       >
-                        {isAdmin ? "Admin" : "User"}
+                        {isAdmin ? "Admin" : isSeller ? "Seller" : "User"}
                       </span>
                     </div>
                     <p className="text-sm text-gray-700">
