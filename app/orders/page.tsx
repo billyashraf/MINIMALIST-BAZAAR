@@ -44,7 +44,7 @@ export default async function OrdersPage() {
 
         {orders.length === 0 ? (
           <div className="text-center py-20 border border-dashed border-gray-200 rounded-xl">
-            <p className="text-gray-400 mb-4">No orders yet</p>
+            <p className="text-gray-600 mb-4">No orders yet</p>
             <Link href="/products" className="text-sm font-medium text-black underline underline-offset-2">
               Start shopping
             </Link>
@@ -64,7 +64,7 @@ export default async function OrdersPage() {
               <div key={order._id} className="bg-white rounded-xl border border-gray-100 p-5">
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <p className="text-xs text-gray-400 mb-1">
+                    <p className="text-xs text-gray-600 mb-1">
                       {new Date(order.createdAt).toLocaleDateString("en-US", {
                         year: "numeric", month: "long", day: "numeric",
                       })}
@@ -88,7 +88,7 @@ export default async function OrdersPage() {
                   ))}
                 </div>
                 {order.trackingNumber && (
-                  <p className="text-xs text-gray-400 mt-2">
+                  <p className="text-xs text-gray-600 mt-2">
                     {order.carrier} · {order.trackingNumber}
                   </p>
                 )}

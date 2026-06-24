@@ -64,9 +64,9 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-4">
         {statCards.map(({ label, value, sub }) => (
           <div key={label} className="bg-white rounded-xl border border-gray-100 p-5">
-            <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">{label}</p>
+            <p className="text-xs text-gray-600 uppercase tracking-wide mb-1">{label}</p>
             <p className="text-2xl font-bold text-gray-900">{value}</p>
-            <p className="text-xs text-gray-400 mt-0.5">{sub}</p>
+            <p className="text-xs text-gray-600 mt-0.5">{sub}</p>
           </div>
         ))}
       </div>
@@ -104,7 +104,7 @@ export default async function DashboardPage() {
         <div>
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-sm font-semibold text-gray-900">Recent orders</h2>
-            <Link href="/dashboard/orders" className="text-xs text-gray-400 hover:text-gray-700">
+            <Link href="/dashboard/orders" className="text-xs text-gray-600 hover:text-gray-700">
               View all →
             </Link>
           </div>
@@ -122,7 +122,7 @@ export default async function DashboardPage() {
                 <div key={String(o._id)} className="flex items-center gap-4 px-5 py-3">
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-900 truncate">{o.shippingAddress.fullName}</p>
-                    <p className="text-xs text-gray-400 truncate">
+                    <p className="text-xs text-gray-600 truncate">
                       {o.items.map((i) => i.title).join(", ")}
                     </p>
                   </div>
@@ -139,7 +139,7 @@ export default async function DashboardPage() {
 
       {recentOrders.length === 0 && (
         <div className="text-center py-16 border border-dashed border-gray-200 rounded-xl">
-          <p className="text-gray-400 text-sm">No orders yet — share your affiliate links to start selling.</p>
+          <p className="text-gray-600 text-sm">No orders yet — share your affiliate links to start selling.</p>
         </div>
       )}
     </div>

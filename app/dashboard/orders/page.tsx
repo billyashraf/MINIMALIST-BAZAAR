@@ -33,7 +33,7 @@ export default async function SellerOrdersPage() {
 
       {orders.length === 0 ? (
         <div className="text-center py-20 border border-dashed border-gray-200 rounded-xl">
-          <p className="text-gray-400 text-sm">No orders yet</p>
+          <p className="text-gray-600 text-sm">No orders yet</p>
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
@@ -67,7 +67,7 @@ export default async function SellerOrdersPage() {
                   </td>
                   <td className="px-4 py-3">
                     <p className="font-medium text-gray-900 text-xs">{order.shippingAddress.fullName}</p>
-                    <p className="text-gray-400 text-xs">{order.shippingAddress.city}, {order.shippingAddress.country}</p>
+                    <p className="text-gray-600 text-xs">{order.shippingAddress.city}, {order.shippingAddress.country}</p>
                   </td>
                   <td className="px-4 py-3">
                     {order.items.map((i, idx) => (
@@ -92,7 +92,7 @@ export default async function SellerOrdersPage() {
                         <span>{order.carrier} {order.trackingNumber}</span>
                       )
                     ) : (
-                      <span className="text-gray-300">—</span>
+                      <span className="text-gray-500">—</span>
                     )}
                   </td>
                   <td className="px-4 py-3">

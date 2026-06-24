@@ -44,7 +44,7 @@ export default async function ProductsPage() {
 
       {products.length === 0 ? (
         <div className="text-center py-20 border border-dashed border-gray-200 rounded-xl">
-          <p className="text-gray-400 mb-4">No products yet</p>
+          <p className="text-gray-600 mb-4">No products yet</p>
           <Link
             href="/dashboard/products/new"
             className="text-sm font-medium text-black underline underline-offset-2"

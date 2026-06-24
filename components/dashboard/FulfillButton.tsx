@@ -96,7 +96,7 @@ export default function FulfillButton({ orderId, currentStatus }: Props) {
 
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">
-                  Tracking URL <span className="text-gray-400">(optional)</span>
+                  Tracking URL <span className="text-gray-600">(optional)</span>
                 </label>
                 <input
                   value={trackingUrl}

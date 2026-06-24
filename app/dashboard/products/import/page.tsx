@@ -66,7 +66,7 @@ export default function ImportPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-900 mb-1">Import product</h1>
-      <p className="text-sm text-gray-400 mb-6">
+      <p className="text-sm text-gray-600 mb-6">
         Paste any product URL — we&apos;ll extract the title, description, images, and
         price automatically.
       </p>
@@ -94,7 +94,7 @@ export default function ImportPage() {
       </div>
 
       {/* Legal note */}
-      <p className="text-xs text-gray-400 mb-8 max-w-2xl">
+      <p className="text-xs text-gray-600 mb-8 max-w-2xl">
         Only import products you are authorised to resell. Verify the retailer&apos;s
         affiliate/API terms before publishing.
       </p>

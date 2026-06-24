@@ -19,3 +19,9 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Ensure all placeholders are legible */
+::placeholder {
+  color: #4b5563; /* gray-600 */
+  opacity: 1;
+}

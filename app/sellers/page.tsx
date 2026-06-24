@@ -78,7 +78,7 @@ export default async function SellersPage() {
                     </p>
                   </div>
 
-                  <span className="text-gray-400 group-hover:text-gray-700 transition-colors text-lg">→</span>
+                  <span className="text-gray-600 group-hover:text-gray-700 transition-colors text-lg">→</span>
                 </Link>
               );
             })}

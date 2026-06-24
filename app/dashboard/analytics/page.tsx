@@ -51,23 +51,23 @@ export default async function AnalyticsPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Affiliate Analytics</h1>
-        <p className="text-sm text-gray-400 mt-1">Track link performance and manage shareable URLs</p>
+        <p className="text-sm text-gray-600 mt-1">Track link performance and manage shareable URLs</p>
       </div>
 
       {/* Stats cards */}
       <div className="grid grid-cols-3 gap-4">
         <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Total links</p>
+          <p className="text-xs text-gray-600 uppercase tracking-wide mb-1">Total links</p>
           <p className="text-3xl font-bold text-gray-900">{links.length}</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Total clicks</p>
+          <p className="text-xs text-gray-600 uppercase tracking-wide mb-1">Total clicks</p>
           <p className="text-3xl font-bold text-gray-900">{totalClicks}</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Conversions</p>
+          <p className="text-xs text-gray-600 uppercase tracking-wide mb-1">Conversions</p>
           <p className="text-3xl font-bold text-gray-900">{totalConversions}</p>
-          <p className="text-xs text-gray-400 mt-1">{convRate}% rate</p>
+          <p className="text-xs text-gray-600 mt-1">{convRate}% rate</p>
         </div>
       </div>
 
@@ -78,7 +78,7 @@ export default async function AnalyticsPage() {
           <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-100 text-left text-gray-400">
+                <tr className="border-b border-gray-100 text-left text-gray-600">
                   <th className="px-4 py-3 font-medium">Product</th>
                   <th className="px-4 py-3 font-medium">Share URL</th>
                   <th className="px-4 py-3 font-medium text-right">Clicks</th>
@@ -104,7 +104,7 @@ export default async function AnalyticsPage() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs text-gray-400 font-mono truncate max-w-[150px]">
+                          <span className="text-xs text-gray-600 font-mono truncate max-w-[150px]">
                             /go/{link.slug}
                           </span>
                           <CopyButton text={shareUrl} />
@@ -152,8 +152,8 @@ export default async function AnalyticsPage() {
 
       {links.length === 0 && unlinkedProducts.length === 0 && (
         <div className="text-center py-20 border border-dashed border-gray-200 rounded-xl">
-          <p className="text-gray-400 text-sm">No listed products yet.</p>
-          <p className="text-gray-300 text-xs mt-1">
+          <p className="text-gray-600 text-sm">No listed products yet.</p>
+          <p className="text-gray-500 text-xs mt-1">
             List a product first, then create an affiliate link for it.
           </p>
         </div>

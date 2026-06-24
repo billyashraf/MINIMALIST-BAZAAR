@@ -45,7 +45,7 @@ export default function CheckoutPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-400 mb-4">Your cart is empty</p>
+          <p className="text-gray-600 mb-4">Your cart is empty</p>
           <Link href="/products" className="text-sm text-black underline underline-offset-2">
             Browse products
           </Link>
@@ -76,7 +76,7 @@ export default function CheckoutPage() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 line-clamp-1">{item.title}</p>
-                <p className="text-xs text-gray-400 mt-0.5">Qty {item.quantity}</p>
+                <p className="text-xs text-gray-600 mt-0.5">Qty {item.quantity}</p>
               </div>
               <p className="text-sm font-semibold shrink-0">
                 ${(item.price * item.quantity).toFixed(2)}
@@ -118,7 +118,7 @@ export default function CheckoutPage() {
           {loading ? "Redirecting…" : "Pay with Stripe"}
         </button>
 
-        <p className="text-xs text-gray-400 text-center mt-3">
+        <p className="text-xs text-gray-600 text-center mt-3">
           You will be redirected to Stripe to complete payment securely.
         </p>
       </main>

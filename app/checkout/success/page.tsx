@@ -45,14 +45,14 @@ export default async function SuccessPage({
         {customerName && (
           <p className="text-gray-500 mb-1">Thank you, {customerName.split(" ")[0]}.</p>
         )}
-        <p className="text-gray-400 text-sm mb-8">
+        <p className="text-gray-600 text-sm mb-8">
           {itemCount} item{itemCount !== 1 ? "s" : ""} · ${total.toFixed(2)} paid
         </p>
 
         <div className="bg-white rounded-xl border border-gray-100 p-5 mb-6 text-left text-sm text-gray-500 space-y-1">
           <p>✓ Payment received</p>
           <p>✓ Order is being prepared for fulfillment</p>
-          <p className="text-gray-400">You will receive a confirmation email shortly.</p>
+          <p className="text-gray-600">You will receive a confirmation email shortly.</p>
         </div>
 
         <div className="flex gap-3 justify-center">

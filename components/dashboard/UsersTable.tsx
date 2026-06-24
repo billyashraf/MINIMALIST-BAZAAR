@@ -27,7 +27,7 @@ const roleVisibility: Record<string, string> = {
 };
 
 const roleVisibilityColor: Record<string, string> = {
-  customer: "text-gray-400",
+  customer: "text-gray-600",
   seller: "text-blue-600",
   admin: "text-green-600",
 };
@@ -119,19 +119,19 @@ export default function UsersTable() {
     <div className="space-y-8">
       <div className="grid grid-cols-4 gap-4">
         <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Total</p>
+          <p className="text-xs text-gray-600 uppercase tracking-wide mb-1">Total</p>
           <p className="text-2xl font-bold text-gray-900">{users.length}</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Customers</p>
+          <p className="text-xs text-gray-600 uppercase tracking-wide mb-1">Customers</p>
           <p className="text-2xl font-bold text-gray-900">{customers.length}</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Sellers</p>
+          <p className="text-xs text-gray-600 uppercase tracking-wide mb-1">Sellers</p>
           <p className="text-2xl font-bold text-blue-600">{sellers.length}</p>
         </div>
         <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Admins</p>
+          <p className="text-xs text-gray-600 uppercase tracking-wide mb-1">Admins</p>
           <p className="text-2xl font-bold text-green-600">{admins.length}</p>
         </div>
       </div>
@@ -143,12 +143,12 @@ export default function UsersTable() {
         <table className="w-full text-sm">
           <thead className="border-b border-gray-100 bg-gray-50">
             <tr>
-              <th className="text-left px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">User</th>
-              <th className="text-left px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">Role</th>
-              <th className="text-left px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">Status</th>
-              <th className="text-left px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">Products</th>
-              <th className="text-left px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide">Visibility</th>
-              <th className="px-5 py-3 text-xs font-medium text-gray-400 uppercase tracking-wide text-right">Actions</th>
+              <th className="text-left px-5 py-3 text-xs font-medium text-gray-600 uppercase tracking-wide">User</th>
+              <th className="text-left px-5 py-3 text-xs font-medium text-gray-600 uppercase tracking-wide">Role</th>
+              <th className="text-left px-5 py-3 text-xs font-medium text-gray-600 uppercase tracking-wide">Status</th>
+              <th className="text-left px-5 py-3 text-xs font-medium text-gray-600 uppercase tracking-wide">Products</th>
+              <th className="text-left px-5 py-3 text-xs font-medium text-gray-600 uppercase tracking-wide">Visibility</th>
+              <th className="px-5 py-3 text-xs font-medium text-gray-600 uppercase tracking-wide text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
@@ -156,7 +156,7 @@ export default function UsersTable() {
               <tr key={u._id} className="hover:bg-gray-50 transition-colors">
                 <td className="px-5 py-3">
                   <p className="font-medium text-gray-900">{u.name}</p>
-                  <p className="text-xs text-gray-400">{u.email}</p>
+                  <p className="text-xs text-gray-600">{u.email}</p>
                 </td>
                 <td className="px-5 py-3">
                   <span className={`capitalize text-xs px-2 py-0.5 rounded-full font-medium ${roleBadge[u.role] ?? "bg-gray-100 text-gray-600"}`}>
@@ -172,18 +172,18 @@ export default function UsersTable() {
                 </td>
                 <td className="px-5 py-3 text-gray-700">
                   {u.role === "customer" ? (
-                    <span className="text-gray-400">—</span>
+                    <span className="text-gray-600">—</span>
                   ) : (
                     <>
                       {u.productCount}
                       {u.role === "seller" && (
-                        <span className="text-gray-400"> / {PRODUCT_LIMIT}</span>
+                        <span className="text-gray-600"> / {PRODUCT_LIMIT}</span>
                       )}
                     </>
                   )}
                 </td>
                 <td className="px-5 py-3">
-                  <span className={`text-xs font-medium ${roleVisibilityColor[u.role] ?? "text-gray-400"}`}>
+                  <span className={`text-xs font-medium ${roleVisibilityColor[u.role] ?? "text-gray-600"}`}>
                     {roleVisibility[u.role]}
                   </span>
                 </td>

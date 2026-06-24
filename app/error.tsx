@@ -19,7 +19,7 @@ export default function GlobalError({
         <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6 text-center">
           <p className="text-8xl font-bold text-gray-100 select-none mb-6">500</p>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Something went wrong</h1>
-          <p className="text-gray-400 text-sm mb-8 max-w-xs">
+          <p className="text-gray-600 text-sm mb-8 max-w-xs">
             An unexpected error occurred. Please try again.
           </p>
           <button

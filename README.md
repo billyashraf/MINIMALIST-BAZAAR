@@ -144,6 +144,24 @@ Minimalist Bazaar acts as a marketplace layer between external retailers and cus
 - [x] Storefront header is auth-aware: shows "My orders" / "Dashboard" when logged in
 - [ ] **Connect Stripe** (see Phase 4 TODO above) before real purchases can complete
 
+### Phase 9 — Product Data Fetching
+- [ ] Scheduled product sync — periodically re-fetch source price, availability, and images for all listed products
+- [ ] Price change detection — flag or auto-update sale price when source price drifts beyond a configurable threshold
+- [ ] Batch import — accept a list of URLs (CSV or text) and import multiple products in a single job
+- [ ] Product catalog enrichment — pull additional structured data (specs, variants, category tags) from supported retailers
+- [ ] Availability monitoring — mark products as out-of-stock automatically when source listing is removed or sold out
+- [ ] Headless browser fallback — use Playwright/Puppeteer for retailers that block plain HTTP scraping
+- [ ] Proxy + rate-limit layer — respect `robots.txt` and each store's crawl policies
+
+### Phase 10 — Dropshipping API
+- [ ] Supplier API connectors — integrate with AliExpress, CJ Dropshipping, or a custom supplier endpoint
+- [ ] Automated order routing — on payment success, forward customer order + shipping address to supplier API
+- [ ] Real-time inventory sync — pull stock levels from supplier and surface low-inventory warnings in dashboard
+- [ ] Variant support — size/color/option selection on product pages, mapped to supplier SKUs
+- [ ] Return and refund workflow — initiate supplier-side returns, update order status, trigger refund via Stripe
+- [ ] Profit margin calculator — display source cost vs. sale price margin in the product editor
+- [ ] Supplier management page — add/remove suppliers, set priority, view per-supplier order stats
+
 ### Phase 7 — Launch ✅
 - [x] Security headers via `next.config.ts` (CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, `poweredByHeader: false`)
 - [x] Global SEO metadata with title template, Open Graph, and Twitter Card tags

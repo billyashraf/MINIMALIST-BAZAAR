@@ -43,7 +43,7 @@ export default async function OrderDetailPage({
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-xl font-bold text-gray-900">Order details</h1>
-            <p className="text-xs text-gray-400 mt-0.5">
+            <p className="text-xs text-gray-600 mt-0.5">
               Placed {new Date(order.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
             </p>
           </div>
@@ -56,7 +56,7 @@ export default async function OrderDetailPage({
             {statusSteps.map((step, i) => (
               <div key={step} className="flex-1 flex flex-col items-center">
                 <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold mb-1 transition-colors ${
-                  i <= currentStep ? "bg-black text-white" : "bg-gray-100 text-gray-400"
+                  i <= currentStep ? "bg-black text-white" : "bg-gray-100 text-gray-600"
                 }`}>
                   {i < currentStep ? (
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
@@ -66,7 +66,7 @@ export default async function OrderDetailPage({
                     i + 1
                   )}
                 </div>
-                <p className={`text-xs text-center ${i <= currentStep ? "text-gray-900 font-medium" : "text-gray-400"}`}>
+                <p className={`text-xs text-center ${i <= currentStep ? "text-gray-900 font-medium" : "text-gray-600"}`}>
                   {stepLabel[step]}
                 </p>
               </div>
@@ -92,7 +92,7 @@ export default async function OrderDetailPage({
               </a>
             )}
             {order.shippedAt && (
-              <p className="text-xs text-gray-400 mt-2">
+              <p className="text-xs text-gray-600 mt-2">
                 Shipped {new Date(order.shippedAt).toLocaleDateString()}
               </p>
             )}
@@ -105,7 +105,7 @@ export default async function OrderDetailPage({
             <div key={i} className="flex items-center justify-between px-5 py-3">
               <div>
                 <p className="text-sm font-medium text-gray-900">{item.title}</p>
-                <p className="text-xs text-gray-400">× {item.quantity}</p>
+                <p className="text-xs text-gray-600">× {item.quantity}</p>
               </div>
               <p className="text-sm font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
             </div>

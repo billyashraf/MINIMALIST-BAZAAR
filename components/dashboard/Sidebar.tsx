@@ -56,7 +56,7 @@ export default function Sidebar({ user }: Props) {
       <div className="border-t border-gray-100 pt-4 mt-4">
         <p className="px-3 text-xs text-gray-500 truncate mb-0.5">{user.email}</p>
         {user.role && (
-          <p className="px-3 text-xs text-gray-400 capitalize mb-2">{user.role}</p>
+          <p className="px-3 text-xs text-gray-600 capitalize mb-2">{user.role}</p>
         )}
         <button
           onClick={() => signOut({ callbackUrl: "/" })}
