@@ -4,7 +4,8 @@ import { useCart } from "@/lib/store/cart";
 import { useEffect, useState } from "react";
 
 export default function CartButton() {
-  const { itemCount, setOpen } = useCart((s) => ({ itemCount: s.count(), setOpen: s.setOpen }));
+  const itemCount = useCart((s) => s.items.reduce((sum, i) => sum + i.quantity, 0));
+  const setOpen = useCart((s) => s.setOpen);
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
