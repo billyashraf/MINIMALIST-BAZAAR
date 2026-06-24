@@ -18,6 +18,7 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [promoting, setPromoting] = useState<string | null>(null);
+  const [demoting, setDemoting] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/admin/users")
@@ -44,6 +45,17 @@ export default function UsersPage() {
       );
     }
     setPromoting(null);
+  };
+
+  const demote = async (id: string) => {
+    setDemoting(id);
+    const res = await fetch(`/api/admin/users/${id}/demote`, { method: "PATCH" });
+    if (res.ok) {
+      setUsers((prev) =>
+        prev.map((u) => (u._id === id ? { ...u, role: "customer" } : u))
+      );
+    }
+    setDemoting(null);
   };
 
   if (loading) {
@@ -137,13 +149,21 @@ export default function UsersPage() {
                   )}
                 </td>
                 <td className="px-5 py-3 text-right">
-                  {u.role !== "admin" && (
+                  {u.role !== "admin" ? (
                     <button
                       onClick={() => promote(u._id)}
                       disabled={promoting === u._id}
                       className="px-3 py-1.5 text-xs bg-black text-white rounded-lg hover:bg-gray-900 disabled:opacity-50 transition-colors"
                     >
                       {promoting === u._id ? "Promoting…" : "Promote to admin"}
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => demote(u._id)}
+                      disabled={demoting === u._id}
+                      className="px-3 py-1.5 text-xs border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors"
+                    >
+                      {demoting === u._id ? "Demoting…" : "Demote"}
                     </button>
                   )}
                 </td>
