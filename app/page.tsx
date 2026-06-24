@@ -2,7 +2,6 @@ import { connectDB } from "@/lib/mongodb";
 import Product from "@/models/Product";
 import Image from "next/image";
 import Link from "next/link";
-import DemoAccessButton from "@/components/DemoAccessButton";
 import CartButton from "@/components/cart/CartButton";
 import CartDrawer from "@/components/cart/CartDrawer";
 import { auth } from "@/auth";
@@ -77,7 +76,12 @@ export default async function Home() {
               >
                 Get started
               </Link>
-              <DemoAccessButton />
+              <Link
+                href="/login"
+                className="px-6 py-2.5 border border-gray-200 text-sm rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Sign in
+              </Link>
             </div>
           )}
         </div>
@@ -90,8 +94,7 @@ export default async function Home() {
 
         {products.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-gray-400 mb-4">No products available yet.</p>
-            <DemoAccessButton />
+            <p className="text-gray-400">No products available yet.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
