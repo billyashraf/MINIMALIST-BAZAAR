@@ -3,6 +3,9 @@ import { auth } from "@/auth";
 import { getStripe } from "@/lib/payments";
 import { cookies } from "next/headers";
 import { z } from "zod";
+import { connectDB } from "@/lib/mongodb";
+import User from "@/models/User";
+import Order from "@/models/Order";
 
 const cartItemSchema = z.object({
   productId: z.string(),
@@ -24,6 +27,26 @@ export async function POST(request: Request) {
   const session = await auth();
   const body = await request.json();
   const parsed = schema.safeParse(body);
+
+  // Enforce order limit for logged-in users
+  if (session?.user?.id) {
+    await connectDB();
+    const user = await User.findById(session.user.id).select("maxOrders");
+    if (user && user.maxOrders !== -1) {
+      const orderCount = await Order.countDocuments({
+        customerId: session.user.id,
+        paymentStatus: "paid",
+      });
+      if (orderCount >= user.maxOrders) {
+        return NextResponse.json(
+          {
+            error: `You have reached your order limit of ${user.maxOrders}. Contact admin to be promoted to unlimited orders.`,
+          },
+          { status: 403 }
+        );
+      }
+    }
+  }
 
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid cart data" }, { status: 400 });

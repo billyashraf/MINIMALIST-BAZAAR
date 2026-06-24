@@ -98,7 +98,22 @@ Minimalist Bazaar acts as a marketplace layer between external retailers and cus
 - [x] Order confirmation page (`/checkout/success`) with cart auto-clear
 - [x] Customer order history (`/orders`)
 - [x] Seller order view in dashboard (`/dashboard/orders`)
-- [ ] Add `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, and `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` to `.env.local`
+
+#### ⚠️ TODO — Connect Stripe Payment (required before accepting real payments)
+
+1. **Create a Stripe account** at https://dashboard.stripe.com/register
+2. **Get your API keys** from Stripe Dashboard → Developers → API keys
+3. **Add keys to `.env.local`**:
+   ```
+   STRIPE_SECRET_KEY=sk_live_...          # or sk_test_... for testing
+   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
+   STRIPE_WEBHOOK_SECRET=whsec_...
+   ```
+4. **Set up the webhook** in Stripe Dashboard → Developers → Webhooks:
+   - Endpoint URL: `https://yourdomain.com/api/fulfillment/webhook`
+   - Event to listen for: `checkout.session.completed`
+   - Copy the signing secret into `STRIPE_WEBHOOK_SECRET`
+5. **Test the flow** using Stripe's test mode keys and card number `4242 4242 4242 4242`
 
 ### Phase 5 — Fulfillment ✅
 - [x] Extended Order model with tracking fields (number, carrier, URL, shippedAt, deliveredAt)
@@ -119,6 +134,15 @@ Minimalist Bazaar acts as a marketplace layer between external retailers and cus
 - [x] Analytics & Affiliates dashboard (`/dashboard/analytics`) — stats cards (links, clicks, conversions, rate), per-link table with progress bars
 - [x] Create/delete affiliate links per product directly from dashboard
 - [x] One-click copy shareable URL button
+
+### Phase 8 — Open Storefront & User Tiers ✅
+- [x] Landing page shows all listed products without requiring login
+- [x] Guests (not logged in) can browse, add to cart, and complete checkout
+- [x] Registered users start with a limit of 5 orders; admin can promote to unlimited
+- [x] Admin dashboard → Users page (`/dashboard/users`) — list all users, order counts, promote button
+- [x] `PATCH /api/admin/users/[id]/promote` — sets `maxOrders: -1` (unlimited)
+- [x] Storefront header is auth-aware: shows "My orders" / "Dashboard" when logged in
+- [ ] **Connect Stripe** (see Phase 4 TODO above) before real purchases can complete
 
 ### Phase 7 — Launch ✅
 - [x] Security headers via `next.config.ts` (CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, `poweredByHeader: false`)

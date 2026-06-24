@@ -4,7 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 
-const nav = [
+type NavItem = { label: string; href: string; indent?: boolean };
+
+const baseNav: NavItem[] = [
   { label: "Overview", href: "/dashboard" },
   { label: "Products", href: "/dashboard/products" },
   { label: "Import product", href: "/dashboard/products/import", indent: true },
@@ -12,12 +14,15 @@ const nav = [
   { label: "Analytics & Affiliates", href: "/dashboard/analytics" },
 ];
 
+const adminNav: NavItem[] = [{ label: "Users", href: "/dashboard/users" }];
+
 interface Props {
-  user: { name?: string | null; email?: string | null };
+  user: { name?: string | null; email?: string | null; role?: string | null };
 }
 
 export default function Sidebar({ user }: Props) {
   const pathname = usePathname();
+  const nav = user.role === "admin" ? [...baseNav, ...adminNav] : baseNav;
 
   return (
     <aside className="w-60 shrink-0 flex flex-col bg-white border-r border-gray-100 px-4 py-6">
@@ -49,7 +54,10 @@ export default function Sidebar({ user }: Props) {
       </nav>
 
       <div className="border-t border-gray-100 pt-4 mt-4">
-        <p className="px-3 text-xs text-gray-500 truncate mb-2">{user.email}</p>
+        <p className="px-3 text-xs text-gray-500 truncate mb-0.5">{user.email}</p>
+        {user.role && (
+          <p className="px-3 text-xs text-gray-400 capitalize mb-2">{user.role}</p>
+        )}
         <button
           onClick={() => signOut({ callbackUrl: "/" })}
           className="w-full text-left px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
