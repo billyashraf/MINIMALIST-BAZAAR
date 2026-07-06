@@ -212,7 +212,7 @@ export default function ProductForm({ productId, defaultValues }: Props) {
 }
 
 const input =
-  "w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black bg-white";
+  "w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black bg-white text-black";
 const label = "block text-sm font-medium text-gray-700 mb-1";
 
 function Field({

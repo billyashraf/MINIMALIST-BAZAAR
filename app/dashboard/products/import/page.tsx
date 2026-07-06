@@ -101,7 +101,7 @@ export default function ImportPage() {
           onChange={(e) => setUrl(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleFetch()}
           placeholder="https://www.ebay.com/itm/... or any Shopify / Etsy / AliExpress URL"
-          className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black"
+          className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black bg-white text-black"
         />
         <button
           onClick={handleFetch}
