@@ -20,8 +20,11 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Ensure all placeholders are legible */
-::placeholder {
-  color: #4b5563; /* gray-600 */
+/* Ensure all placeholders are legible (matches Tailwind preflight's specificity so it actually wins) */
+input::placeholder,
+textarea::placeholder,
+input::-moz-placeholder,
+textarea::-moz-placeholder {
+  color: #000000;
   opacity: 1;
 }

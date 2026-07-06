@@ -26,7 +26,7 @@ export default function Sidebar({ user }: Props) {
 
   return (
     <aside className="w-60 shrink-0 flex flex-col bg-white border-r border-gray-100 px-4 py-6">
-      <Link href="/" className="text-lg font-bold tracking-tight px-2 mb-8">
+      <Link href="/" className="text-lg font-bold tracking-tight px-2 mb-8 text-gray-900">
         Minimalist Bazaar
       </Link>
 
