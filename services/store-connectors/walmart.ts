@@ -1,5 +1,5 @@
 import type { StoreConnector, ConnectorResult } from "./types";
-import { fetchHtml, extractMeta, extractJsonLd, findProductSchema, parsePrice, absoluteUrl, stripHtml, extractNextData } from "./utils";
+import { fetchHtmlResilient, BlockedError, extractMeta, extractJsonLd, findProductSchema, parsePrice, absoluteUrl, stripHtml, extractNextData } from "./utils";
 
 export const walmartConnector: StoreConnector = {
   name: "Walmart",
@@ -11,8 +11,9 @@ export const walmartConnector: StoreConnector = {
   async fetch(url: string): Promise<ConnectorResult> {
     let html: string;
     try {
-      html = await fetchHtml(url);
+      html = await fetchHtmlResilient(url, { referer: "https://www.walmart.com/" });
     } catch (e) {
+      if (e instanceof BlockedError) return { success: false, error: e.message };
       return { success: false, error: `Could not reach Walmart: ${(e as Error).message}` };
     }
 

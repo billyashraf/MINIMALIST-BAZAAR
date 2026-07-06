@@ -1,5 +1,5 @@
 import type { StoreConnector, ConnectorResult } from "./types";
-import { fetchHtml, extractMeta, extractJsonLd, findProductSchema, parsePrice, extractHostname, absoluteUrl, stripHtml } from "./utils";
+import { fetchHtmlResilient, BlockedError, extractMeta, extractJsonLd, findProductSchema, parsePrice, extractHostname, absoluteUrl, stripHtml } from "./utils";
 
 // AliExpress embeds product data in multiple script patterns
 function extractAliData(html: string): { title?: string; price?: number; images?: string[]; description?: string } {
@@ -47,11 +47,12 @@ export const aliexpressConnector: StoreConnector = {
   async fetch(url: string): Promise<ConnectorResult> {
     let html: string;
     try {
-      html = await fetchHtml(url, {
+      html = await fetchHtmlResilient(url, {
         referer: "https://www.aliexpress.com/",
         extraCookies: "aep_usuc_f=site=glo&c_tp=USD&isb=y&region=US&b_locale=en_US",
       });
     } catch (e) {
+      if (e instanceof BlockedError) return { success: false, error: e.message };
       return { success: false, error: `Could not reach AliExpress: ${(e as Error).message}` };
     }
 

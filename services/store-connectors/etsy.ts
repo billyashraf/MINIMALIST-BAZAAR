@@ -1,5 +1,5 @@
 import type { StoreConnector, ConnectorResult } from "./types";
-import { fetchHtml, extractMeta, extractJsonLd, findProductSchema, parsePrice, stripHtml, absoluteUrl } from "./utils";
+import { fetchHtmlResilient, BlockedError, extractMeta, extractJsonLd, findProductSchema, parsePrice, stripHtml, absoluteUrl } from "./utils";
 
 export const etsyConnector: StoreConnector = {
   name: "Etsy",
@@ -11,8 +11,9 @@ export const etsyConnector: StoreConnector = {
   async fetch(url: string): Promise<ConnectorResult> {
     let html: string;
     try {
-      html = await fetchHtml(url);
+      html = await fetchHtmlResilient(url, { referer: "https://www.etsy.com/" });
     } catch (e) {
+      if (e instanceof BlockedError) return { success: false, error: e.message };
       return { success: false, error: `Could not reach Etsy: ${(e as Error).message}` };
     }
 

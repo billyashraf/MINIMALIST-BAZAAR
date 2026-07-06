@@ -163,6 +163,68 @@ export async function fetchHtml(url: string, opts: FetchOptions = {}): Promise<s
     signal: AbortSignal.timeout(opts.timeoutMs ?? 15000),
   });
 
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
   return res.text();
+}
+
+// Thrown when a source actively blocked us (bot-detection challenge, not a network failure)
+export class BlockedError extends Error {}
+
+const BLOCK_MARKERS = [
+  "captcha",
+  "are you a human",
+  "access to this page has been denied",
+  "access denied",
+  "pardon our interruption",
+  "just a moment", // Cloudflare interstitial
+  "attention required", // Cloudflare
+  "request unsuccessful. incapsula",
+  "robot check",
+  "unusual traffic",
+  "px-captcha",
+  "distil_r_captcha",
+  "verify you are a human",
+  "enable javascript and cookies",
+];
+
+// Bot-detection vendors often return HTTP 200 with a challenge page instead of an
+// error status, so a status check alone misses them — scan the page body too.
+export function looksBlocked(html: string): boolean {
+  const head = html.slice(0, 6000).toLowerCase();
+  return BLOCK_MARKERS.some((marker) => head.includes(marker));
+}
+
+const BLOCK_STATUS = [403, 429, 503];
+
+function statusOf(e: unknown): number | null {
+  const m = /^HTTP (\d{3})/.exec((e as Error)?.message ?? "");
+  return m ? parseInt(m[1], 10) : null;
+}
+
+// fetchHtml with one automatic retry (mobile UA + search-engine referer) when the
+// first attempt is rejected outright or comes back as a bot-detection challenge page.
+export async function fetchHtmlResilient(url: string, opts: FetchOptions = {}): Promise<string> {
+  let firstError: unknown = null;
+  try {
+    const html = await fetchHtml(url, opts);
+    if (!looksBlocked(html)) return html;
+    firstError = new BlockedError("Challenge page detected");
+  } catch (e) {
+    firstError = e;
+  }
+
+  try {
+    const html = await fetchHtml(url, {
+      ...opts,
+      mobile: true,
+      referer: opts.referer ?? "https://www.google.com/",
+    });
+    if (!looksBlocked(html)) return html;
+  } catch { /* fall through to throw below */ }
+
+  const wasBlocked = firstError instanceof BlockedError || BLOCK_STATUS.includes(statusOf(firstError) ?? -1);
+  if (wasBlocked) {
+    throw new BlockedError(`${extractHostname(url)} is blocking automated requests (anti-bot protection).`);
+  }
+  throw firstError instanceof Error ? firstError : new Error("Could not reach the page.");
 }

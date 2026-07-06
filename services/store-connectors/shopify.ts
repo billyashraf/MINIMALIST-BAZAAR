@@ -1,5 +1,5 @@
 import type { StoreConnector, ConnectorResult } from "./types";
-import { fetchHtml, extractMeta, extractJsonLd, findProductSchema, parsePrice, extractHostname, absoluteUrl, stripHtml } from "./utils";
+import { fetchHtmlResilient, BlockedError, extractMeta, extractJsonLd, findProductSchema, parsePrice, extractHostname, absoluteUrl, stripHtml } from "./utils";
 
 interface ShopifyVariant {
   price: string;
@@ -78,8 +78,9 @@ export const shopifyConnector: StoreConnector = {
     // ── Strategy 2: HTML scraping fallback ─────────────────────────────────
     let html: string;
     try {
-      html = await fetchHtml(url);
+      html = await fetchHtmlResilient(url);
     } catch (e) {
+      if (e instanceof BlockedError) return { success: false, error: e.message };
       return { success: false, error: `Could not reach ${hostname}: ${(e as Error).message}` };
     }
 

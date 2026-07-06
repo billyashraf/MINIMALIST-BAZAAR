@@ -1,6 +1,7 @@
 import type { StoreConnector, ConnectorResult } from "./types";
 import {
-  fetchHtml,
+  fetchHtmlResilient,
+  BlockedError,
   extractMeta,
   extractJsonLd,
   findProductSchema,
@@ -22,8 +23,9 @@ export const genericConnector: StoreConnector = {
   async fetch(url: string): Promise<ConnectorResult> {
     let html: string;
     try {
-      html = await fetchHtml(url);
+      html = await fetchHtmlResilient(url);
     } catch (e) {
+      if (e instanceof BlockedError) return { success: false, error: e.message };
       return { success: false, error: `Could not reach URL: ${(e as Error).message}` };
     }
 

@@ -1,6 +1,7 @@
 import type { StoreConnector, ConnectorResult, ImportedProduct } from "./types";
 import {
   fetchHtml,
+  looksBlocked,
   extractMeta,
   extractJsonLd,
   findProductSchema,
@@ -117,7 +118,7 @@ export const amazonConnector: StoreConnector = {
       const html = await fetchHtml(url, {
         extraCookies: "i18n-prefs=USD; lc-main=en_US; sp-cdn=L5Z9:MA",
       });
-      partial = extractFromHtml(html, url);
+      if (!looksBlocked(html)) partial = extractFromHtml(html, url);
     } catch { /* blocked — try mobile next */ }
 
     // Strategy 2: Mobile Amazon (m.amazon.com) — lighter bot detection
@@ -125,7 +126,7 @@ export const amazonConnector: StoreConnector = {
       try {
         const mUrl = mobileUrl(`https://www.amazon.com/dp/${asin}`);
         const html = await fetchHtml(mUrl, { mobile: true, timeoutMs: 12000 });
-        partial = extractFromHtml(html, url);
+        if (!looksBlocked(html)) partial = extractFromHtml(html, url);
       } catch { /* still blocked */ }
     }
 
