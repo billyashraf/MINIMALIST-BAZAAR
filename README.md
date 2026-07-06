@@ -31,7 +31,11 @@ Minimalist Bazaar acts as a marketplace layer between external retailers and cus
 1. Customer places an order
 2. Payment is captured
 3. The system creates a fulfillment request
-4. The product is purchased from the source retailer or forwarded to an approved fulfillment partner
+4. The system automatically attempts to buy the product from the source: through the
+   supplier's official order API (CJ Dropshipping) or a custom supplier webhook, using
+   the customer's shipping details — if no automated integration applies, or the seller
+   hasn't connected a purchasing payment method, the item is queued as a manual purchase
+   task instead
 5. Customer shipping details are transmitted securely
 6. Delivery updates are synchronized with the platform
 
@@ -154,13 +158,50 @@ Minimalist Bazaar acts as a marketplace layer between external retailers and cus
 - [ ] Proxy + rate-limit layer — respect `robots.txt` and each store's crawl policies
 
 ### Phase 10 — Dropshipping API
-- [ ] Supplier API connectors — integrate with AliExpress, CJ Dropshipping, or a custom supplier endpoint
-- [ ] Automated order routing — on payment success, forward customer order + shipping address to supplier API
+- [x] Supplier connector architecture (`services/dropshipping/`) — pluggable providers, same pattern as `store-connectors/`
+- [x] CJ Dropshipping connector — real order-placement API (`createOrder`), gated behind `CJ_DROPSHIPPING_EMAIL` / `CJ_DROPSHIPPING_API_KEY`
+- [x] Custom supplier webhook connector — hand off order + shipping address to a seller's own supplier/agent system (`SUPPLIER_WEBHOOK_URL`)
+- [x] Automated order routing — on payment success, the Stripe webhook calls `routeSupplierOrder()` for every item
+- [x] Manual fulfillment fallback — any source without a working automated integration (Amazon, scraped stores, unconfigured providers, or a failed attempt) is marked `manual_required` with a "Buy from source" link and copyable shipping info in the seller dashboard
+- [x] Per-item supplier status tracking (`pending` / `placed` / `manual_required` / `failed`) + seller-triggered retry (`POST /api/orders/:id/supplier-retry`)
 - [ ] Real-time inventory sync — pull stock levels from supplier and surface low-inventory warnings in dashboard
-- [ ] Variant support — size/color/option selection on product pages, mapped to supplier SKUs
+- [ ] Variant support — size/color/option selection on product pages, mapped to supplier SKUs (auto-order currently uses the product's default/first variant)
 - [ ] Return and refund workflow — initiate supplier-side returns, update order status, trigger refund via Stripe
 - [ ] Profit margin calculator — display source cost vs. sale price margin in the product editor
 - [ ] Supplier management page — add/remove suppliers, set priority, view per-supplier order stats
+
+> **Why no Amazon/Walmart/eBay/AliExpress-via-scraping auto-buy?** Automatically placing
+> a purchase through a retailer's own consumer checkout would mean scripting past login,
+> payment forms, and CAPTCHA/2FA — something that isn't reliable to build and violates
+> those retailers' terms of service against automated buying bots. Legitimate dropshipping
+> automation goes through a supplier's official order-placement API (like CJ Dropshipping)
+> or a webhook to a human/agent-run fulfillment system — which is what's implemented above.
+> Everything else automatically falls back to the manual task queue.
+
+#### ⚠️ TODO — Connect Purchasing Card (required before automated supplier orders can run)
+
+Automated supplier ordering is gated per-seller behind `User.purchasing.cardConnected` —
+until a seller connects a real payment method, every item for that seller falls back to
+`manual_required` even if a supplier integration is configured. This is a deliberate
+safety switch so the system never places live purchases before a seller has explicitly
+opted in. The gate and data model exist (`models/User.ts` → `purchasing`); the connection
+flow itself is intentionally left for later:
+
+1. **Create a Stripe SetupIntent** server-side (`stripe.setupIntents.create()`) for the
+   seller and render Stripe Elements' card form on a new `/dashboard/settings/purchasing`
+   page — this tokenizes the card with Stripe directly, so raw card numbers never touch
+   our server (same PCI-scope reasoning as the Phase 4 checkout).
+2. **On confirmation**, store only the token references on the seller's `User` doc:
+   `purchasing.stripeCustomerId`, `purchasing.stripePaymentMethodId`, `purchasing.last4`,
+   `purchasing.brand` — then set `purchasing.cardConnected = true`.
+3. **Decide the charge model**: CJ Dropshipping deducts from a prepaid CJ account balance
+   (top up directly on CJ, no per-order card charge from us), while a custom supplier
+   webhook may expect us to charge the seller's card per order via
+   `stripe.paymentIntents.create({ customer, payment_method, off_session: true })` before
+   calling the webhook — implement whichever matches the supplier relationship.
+4. **Add a "Disconnect card"** action that detaches the Stripe payment method and resets
+   `cardConnected` to `false`, immediately pausing automated ordering for that seller.
+5. **Test with Stripe test mode** (`4242 4242 4242 4242`) before connecting a real card.
 
 ### Phase 7 — Launch ✅
 - [x] Security headers via `next.config.ts` (CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, `poweredByHeader: false`)
@@ -186,7 +227,7 @@ Minimalist Bazaar acts as a marketplace layer between external retailers and cus
 
 **Affiliate Marketing** — Associate products with affiliate links, track clicks and conversions, display commission analytics, and generate shareable URLs.
 
-**Dropshipping** — Create fulfillment requests after payment, transmit customer shipping info securely, track fulfillment status, and sync delivery estimates.
+**Dropshipping** — Automatically route paid orders to a supplier's order-placement API (CJ Dropshipping) or a custom supplier webhook, transmit customer shipping info securely, fall back to a manual purchase task when no automated path applies, and track fulfillment status and delivery estimates.
 
 **Customer Experience** — Product search and filtering, shopping cart, secure checkout, order history, shipment tracking, and email notifications.
 
@@ -201,6 +242,13 @@ User {
   name: string
   email: string
   role: "customer" | "seller" | "admin"
+  purchasing: {
+    cardConnected: boolean       // gates automated supplier ordering — see Phase 10 TODO
+    stripeCustomerId?: string
+    stripePaymentMethodId?: string
+    last4?: string
+    brand?: string
+  }
 }
 
 Product {
@@ -217,11 +265,23 @@ Product {
 
 Order {
   customerId: ObjectId
-  items: OrderItem[]
+  items: OrderItem[]           // each item snapshots sourceUrl/sourceStore + supplierStatus
   totalAmount: number
   paymentStatus: string
   fulfillmentStatus: string
   shippingAddress: Address
+}
+
+OrderItem {
+  productId: ObjectId
+  title: string
+  quantity: number
+  price: number
+  sourceUrl?: string
+  sourceStore?: string
+  supplierStatus?: "pending" | "placed" | "manual_required" | "failed"
+  supplierOrderId?: string
+  supplierNote?: string
 }
 
 AffiliateLink {
@@ -263,6 +323,7 @@ minimalist-bazaar/
 ├── models/
 ├── services/
 │   ├── store-connectors/
+│   ├── dropshipping/
 │   ├── fulfillment/
 │   └── notifications/
 ├── actions/
@@ -286,6 +347,7 @@ minimalist-bazaar/
 | PATCH | `/api/products/:id` | Update a product |
 | DELETE | `/api/products/:id` | Delete a product |
 | POST | `/api/products/:id/reset-price` | Reset sale price to source price |
+| POST | `/api/orders/:id/supplier-retry` | Re-attempt automated supplier ordering for an order's items (seller-only) |
 | POST | `/api/seed` | Seed demo user and products (dev only) |
 
 ---

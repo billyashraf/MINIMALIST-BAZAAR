@@ -6,6 +6,12 @@ interface OrderItem {
   image: string;
   quantity: number;
   price: number;
+  // Snapshot of the product's source at order time, used to route the supplier order
+  sourceUrl?: string;
+  sourceStore?: string;
+  supplierStatus?: "pending" | "placed" | "manual_required" | "failed";
+  supplierOrderId?: string;
+  supplierNote?: string;
 }
 
 interface ShippingAddress {
@@ -56,6 +62,15 @@ const OrderItemSchema = new Schema<OrderItem>(
     image: { type: String, required: true },
     quantity: { type: Number, required: true, min: 1 },
     price: { type: Number, required: true, min: 0 },
+    sourceUrl: { type: String },
+    sourceStore: { type: String },
+    supplierStatus: {
+      type: String,
+      enum: ["pending", "placed", "manual_required", "failed"],
+      default: "pending",
+    },
+    supplierOrderId: { type: String },
+    supplierNote: { type: String },
   },
   { _id: false }
 );

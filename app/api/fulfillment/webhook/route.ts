@@ -3,6 +3,7 @@ import { getStripe } from "@/lib/payments";
 import { connectDB } from "@/lib/mongodb";
 import Order from "@/models/Order";
 import AffiliateLink from "@/models/AffiliateLink";
+import { routeSupplierOrder } from "@/services/dropshipping";
 import type Stripe from "stripe";
 
 export const dynamic = "force-dynamic";
@@ -46,7 +47,7 @@ export async function POST(request: Request) {
     if (!addr) return NextResponse.json({ ok: true });
 
     await connectDB();
-    await Order.create({
+    const order = await Order.create({
       ...(customerId && customerId !== "guest" ? { customerId } : {}),
       items,
       totalAmount: (session.amount_total ?? 0) / 100,
@@ -71,6 +72,16 @@ export async function POST(request: Request) {
         { slug: affiliateSlug },
         { $inc: { conversions: 1 } }
       );
+    }
+
+    // Attempt to auto-place the supplier order for each item; anything that can't be
+    // automated (unsupported source, no purchasing card connected, provider failure)
+    // falls back to a manual_required task in the seller dashboard — this must never
+    // block or fail the payment webhook itself.
+    try {
+      await routeSupplierOrder(String(order._id));
+    } catch (e) {
+      console.error("Supplier order routing failed:", e);
     }
   }
 

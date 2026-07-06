@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/mongodb";
 import Order from "@/models/Order";
 import Product from "@/models/Product";
 import FulfillButton from "@/components/dashboard/FulfillButton";
+import SupplierOrderCell from "@/components/dashboard/SupplierOrderCell";
 
 export const dynamic = "force-dynamic";
 
@@ -45,6 +46,7 @@ export default async function SellerOrdersPage() {
                 <th className="px-4 py-3 font-medium">Items</th>
                 <th className="px-4 py-3 font-medium">Total</th>
                 <th className="px-4 py-3 font-medium">Status</th>
+                <th className="px-4 py-3 font-medium">Supplier order</th>
                 <th className="px-4 py-3 font-medium">Tracking</th>
                 <th className="px-4 py-3 font-medium"></th>
               </tr>
@@ -53,8 +55,16 @@ export default async function SellerOrdersPage() {
               {orders.map((order: {
                 _id: string;
                 createdAt: string;
-                shippingAddress: { fullName: string; city: string; country: string };
-                items: { title: string; quantity: number }[];
+                shippingAddress: {
+                  fullName: string; line1: string; line2?: string;
+                  city: string; state: string; postalCode: string; country: string;
+                };
+                items: {
+                  title: string; quantity: number;
+                  sourceUrl?: string; sourceStore?: string;
+                  supplierStatus?: "pending" | "placed" | "manual_required" | "failed";
+                  supplierOrderId?: string; supplierNote?: string;
+                }[];
                 totalAmount: number;
                 fulfillmentStatus: string;
                 trackingNumber?: string;
@@ -81,6 +91,13 @@ export default async function SellerOrdersPage() {
                     <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium capitalize ${statusColors[order.fulfillmentStatus] ?? ""}`}>
                       {order.fulfillmentStatus}
                     </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <SupplierOrderCell
+                      orderId={order._id}
+                      items={order.items}
+                      shippingAddress={order.shippingAddress}
+                    />
                   </td>
                   <td className="px-4 py-3 text-xs text-gray-500">
                     {order.trackingNumber ? (
